@@ -585,8 +585,8 @@ void Webview::SetPointerButtonState(WebviewPointerButton button, bool is_down) {
 }
 
 void Webview::SendScroll(double delta, bool horizontal) {
-  // delta * 6 gives me a multiple of WHEEL_DELTA (120)
-  constexpr auto kScrollMultiplier = 6;
+  
+  constexpr auto kScrollMultiplier = 1;
 
   auto offset = static_cast<short>(delta * kScrollMultiplier);
 

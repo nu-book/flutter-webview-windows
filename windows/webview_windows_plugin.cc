@@ -49,14 +49,12 @@ class WebviewWindowsPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
-  WebviewWindowsPlugin(HWND parentHWnd,
-                       flutter::TextureRegistrar* textures,
+  WebviewWindowsPlugin(flutter::TextureRegistrar* textures,
                        flutter::BinaryMessenger* messenger);
 
   virtual ~WebviewWindowsPlugin();
 
  private:
-  HWND parentHWnd_;
   std::unique_ptr<WebviewPlatform> platform_;
   std::unique_ptr<WebviewHost> webview_host_;
   std::unordered_map<int64_t, std::unique_ptr<WebviewBridge>> instances_;
@@ -84,9 +82,7 @@ void WebviewWindowsPlugin::RegisterWithRegistrar(
           &flutter::StandardMethodCodec::GetInstance());
 
   auto plugin = std::make_unique<WebviewWindowsPlugin>(
-      registrar->GetView()->GetNativeWindow(),
-      registrar->texture_registrar(),
-      registrar->messenger());
+      registrar->texture_registrar(), registrar->messenger());
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto& call, auto result) {
@@ -96,10 +92,9 @@ void WebviewWindowsPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-WebviewWindowsPlugin::WebviewWindowsPlugin(HWND parentHWnd,
-                                           flutter::TextureRegistrar* textures,
+WebviewWindowsPlugin::WebviewWindowsPlugin(flutter::TextureRegistrar* textures,
                                            flutter::BinaryMessenger* messenger)
-    : parentHWnd_(parentHWnd), textures_(textures), messenger_(messenger) {
+    : textures_(textures), messenger_(messenger) {
   window_class_.lpszClassName = L"FlutterWebviewMessage";
   window_class_.lpfnWndProc = &DefWindowProc;
   RegisterClass(&window_class_);
@@ -204,7 +199,7 @@ void WebviewWindowsPlugin::CreateWebviewInstance(
   std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>>
       shared_result = std::move(result);
   webview_host_->CreateWebview(
-      parentHWnd_, hwnd, true, true,
+      hwnd, true, true,
       [shared_result, this](std::unique_ptr<Webview> webview,
                             std::unique_ptr<WebviewCreationError> error) {
         if (!webview) {

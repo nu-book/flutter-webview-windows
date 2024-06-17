@@ -439,6 +439,16 @@ void Webview::SetPopupWindowPolicy(WebviewPopupWindowPolicy policy) {
   popup_window_policy_ = policy;
 }
 
+std::string Webview::GetUserAgent() {
+  if (settings2_) {
+    LPWSTR userAgent = nullptr;
+    if (settings2_->get_UserAgent(&userAgent) == S_OK) {
+      return util::Utf8FromUtf16(userAgent);
+    }
+  }
+  return "";
+}
+
 bool Webview::SetUserAgent(const std::string& user_agent) {
   if (settings2_) {
     return settings2_->put_UserAgent(util::Utf16FromUtf8(user_agent).c_str()) ==

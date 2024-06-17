@@ -327,6 +327,14 @@ class WebviewController extends ValueNotifier<WebviewValue> {
     return _methodChannel.invokeMethod('goForward');
   }
 
+  Future<String?> getUserAgent() async {
+    if (_isDisposed) {
+      return null;
+    }
+    assert(value.isInitialized);
+    return _methodChannel.invokeMethod<String>('getUserAgent');
+  }
+
   /// Adds the provided JavaScript [script] to a list of scripts that should be run after the global
   /// object has been created, but before the HTML document has been parsed and before any
   /// other script included by the HTML document is run.

@@ -16,6 +16,7 @@ constexpr auto kMethodReload = "reload";
 constexpr auto kMethodStop = "stop";
 constexpr auto kMethodGoBack = "goBack";
 constexpr auto kMethodGoForward = "goForward";
+constexpr auto kMethodGetUserAgent = "getUserAgent";
 constexpr auto kMethodAddScriptToExecuteOnDocumentCreated =
     "addScriptToExecuteOnDocumentCreated";
 constexpr auto kMethodRemoveScriptToExecuteOnDocumentCreated =
@@ -463,6 +464,15 @@ void WebviewBridge::HandleMethodCall(
       return result->Success();
     }
     return result->Error(kMethodFailed);
+  }
+
+  // getUserAgent
+  if (method_name.compare(kMethodGetUserAgent) == 0) {
+    std::string userAgent = webview_->GetUserAgent();
+    if (!userAgent.empty()) {
+      return result->Success(userAgent);
+    }
+    return result->Success(nullptr);
   }
 
   // suspend
